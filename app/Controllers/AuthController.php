@@ -79,9 +79,16 @@ final class AuthController extends Controller
     {
         $email = strtolower(trim((string) ($_POST['email'] ?? '')));
         $password = (string) ($_POST['password'] ?? '');
+        $accessType = trim((string) ($_POST['acceso'] ?? 'usuario'));
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL) || $password === '') {
             Flash::set('Correo o contrasena invalidos.', 'danger');
+            $this->redirect('/login');
+            return;
+        }
+
+        if (!in_array($accessType, ['usuario', 'admin'], true)) {
+            Flash::set('Selecciona un tipo de acceso valido.', 'danger');
             $this->redirect('/login');
             return;
         }
@@ -103,11 +110,18 @@ final class AuthController extends Controller
             return;
         }
 
+        $isAdminUser = (($user['rol_nombre'] ?? '') === 'admin');
+        if ($accessType === 'admin' && !$isAdminUser) {
+            Flash::set('Tu cuenta no tiene permisos de administrador.', 'danger');
+            $this->redirect('/login');
+            return;
+        }
+
         Auth::login($user);
         $this->cartRepository->getOrCreateActiveCart((int) $user['id_usuario']);
 
         Flash::set('Sesion iniciada correctamente.', 'success');
-        if (($user['rol_nombre'] ?? '') === 'admin') {
+        if ($accessType === 'admin' && $isAdminUser) {
             $this->redirect('/admin/productos');
             return;
         }

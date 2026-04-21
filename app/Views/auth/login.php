@@ -1,36 +1,15 @@
 <?php $user = auth_user(); ?>
 
-<section class="ss-panel">
-    <div class="ss-user-card">
-        <div class="ss-user-left">
-            <div class="ss-avatar">X</div>
-            <div>
-                <p class="ss-user-name"><?= e($user['nombre'] ?? 'Invitado') ?></p>
-                <div class="ss-user-email"><?= e($user['email'] ?? 'Sin sesion iniciada') ?></div>
-            </div>
-        </div>
-        <div class="ss-balance">
-            <div class="ss-balance-label">Saldo</div>
-            <div class="ss-balance-value">$3299.00</div>
-        </div>
-    </div>
-    <?php if ($user === null): ?>
-        <a class="btn ss-btn-teal w-100 mt-3" href="<?= e(base_url('/login')) ?>">Inicia sesion</a>
-    <?php else: ?>
-        <a class="btn ss-btn-blue w-100 mt-3" href="<?= e(base_url('/catalogo')) ?>">Ir a la tienda</a>
-    <?php endif; ?>
-</section>
-
 <section class="ss-banner ss-banner-user">
     <h1>Acceso de usuario</h1>
-    <p>Registra tu cuenta, inicia sesion y consulta tus pedidos desde esta pagina.</p>
+    <p>Registra tu cuenta y luego entra como usuario o como admin segun tu perfil.</p>
 </section>
 
-<section class="ss-panel">
+<section class="ss-panel ss-login-panel">
     <h2 class="ss-panel-title">Registro e inicio de sesion</h2>
 
     <div class="ss-form-grid">
-        <div>
+        <div id="registro">
             <h3 class="ss-block-title">Registro</h3>
             <form action="<?= e(base_url('/register')) ?>" method="post" class="vstack gap-2">
                 <?= csrf_field() ?>
@@ -51,7 +30,7 @@
             <div class="ss-note mt-2">Admin demo: admin@shopsmart.local / Admin123!</div>
         </div>
 
-        <div>
+        <div id="login">
             <h3 class="ss-block-title">Inicio de sesion</h3>
             <form action="<?= e(base_url('/login')) ?>" method="post" class="vstack gap-2">
                 <?= csrf_field() ?>
@@ -63,26 +42,22 @@
                     <label class="form-label">Password</label>
                     <input type="password" name="password" class="form-control" placeholder="Tu password" required>
                 </div>
+                <div>
+                    <label class="form-label">Tipo de acceso</label>
+                    <select name="acceso" class="form-select" required>
+                        <option value="usuario">Usuario</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
                 <button class="btn ss-btn-orange" type="submit">Entrar</button>
             </form>
         </div>
     </div>
 </section>
 
-<section class="ss-panel">
-    <h3 class="ss-block-title">Datos del usuario</h3>
-    <?php if ($user !== null): ?>
-        <div class="ss-placeholder">Sesion activa: <?= e($user['nombre']) ?> (<?= e($user['email']) ?>)</div>
-    <?php else: ?>
-        <div class="ss-placeholder">No has iniciado sesion.</div>
-    <?php endif; ?>
-</section>
-
-<section class="ss-panel mb-0">
-    <h3 class="ss-block-title">Pedidos del usuario</h3>
-    <?php if ($user !== null): ?>
-        <div class="ss-placeholder">Puedes revisar tu historial en <a href="<?= e(base_url('/mis-pedidos')) ?>">Mis pedidos</a>.</div>
-    <?php else: ?>
-        <div class="ss-placeholder">Inicia sesion para ver tus pedidos.</div>
-    <?php endif; ?>
-</section>
+<?php if ($user !== null): ?>
+    <section class="ss-panel mb-0">
+        <h3 class="ss-block-title">Sesion activa</h3>
+        <div class="ss-placeholder">Has iniciado sesion como <?= e((string) $user['nombre']) ?> (<?= e((string) $user['email']) ?>).</div>
+    </section>
+<?php endif; ?>

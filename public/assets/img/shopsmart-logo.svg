@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-label="ShopSmart logo">
+  <defs>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#27c0b3"/>
+      <stop offset="100%" stop-color="#1a9f95"/>
+    </linearGradient>
+  </defs>
+  <rect width="160" height="160" rx="80" fill="url(#g1)"/>
+  <circle cx="80" cy="80" r="52" fill="#ffffff" fill-opacity="0.12"/>
+  <path d="M98 52H68c-9 0-16 7-16 16 0 8 6 14 14 16l19 4c4 1 7 4 7 8 0 4-3 8-8 8H50v16h34c13 0 24-10 24-23 0-11-8-20-19-22l-18-4c-2 0-3-2-3-3 0-2 1-4 4-4h26V52z" fill="#ffffff"/>
+</svg>

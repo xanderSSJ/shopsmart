@@ -1,4 +1,5 @@
 <?php $user = auth_user(); ?>
+<?php $defaultProductImage = asset_url('img/product-placeholder.svg'); ?>
 
 <section class="ss-hero">
     <div>
@@ -6,7 +7,11 @@
         <p>Catalogo, compra simulada y panel admin en una interfaz clara inspirada en tus mockups.</p>
         <a class="ss-hero-cta" href="#catalogo">Ver catalogo</a>
     </div>
-    <div class="ss-hero-art"></div>
+    <div class="ss-hero-art">
+        <img class="ss-hero-art-logo" src="<?= e(asset_url('img/shopsmart-logo.svg')) ?>" alt="ShopSmart logo">
+        <img class="ss-hero-art-badge ss-hero-art-badge-a" src="<?= e($defaultProductImage) ?>" alt="producto destacado">
+        <img class="ss-hero-art-badge ss-hero-art-badge-b" src="<?= e($defaultProductImage) ?>" alt="producto destacado">
+    </div>
 </section>
 
 <div class="ss-sale">
@@ -48,7 +53,7 @@
             <div class="ss-product-grid">
                 <?php foreach ($products as $product): ?>
                     <article class="ss-product-card">
-                        <img class="ss-product-img" src="<?= e($product['imagen_url'] ?: 'https://placehold.co/640x400?text=ShopSmart') ?>" alt="<?= e($product['nombre']) ?>">
+                        <img class="ss-product-img" src="<?= e($product['imagen_url'] ?: $defaultProductImage) ?>" alt="<?= e($product['nombre']) ?>">
                         <div class="ss-product-body">
                             <h3 class="ss-product-name"><?= e($product['nombre']) ?></h3>
                             <div class="ss-product-meta"><?= e($product['categoria_nombre']) ?> | Stock: <?= e((string) $product['stock']) ?></div>

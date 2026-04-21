@@ -95,6 +95,14 @@
     gap: 10px;
 }
 
+.ss-brand-logo {
+    width: 50px;
+    height: 50px;
+    border-radius: 999px;
+    object-fit: cover;
+    box-shadow: 0 4px 12px rgba(20, 30, 50, 0.2);
+}
+
 .ss-brand-icon {
     width: 38px;
     height: 38px;
@@ -108,7 +116,7 @@
 }
 
 .ss-brand-name {
-    font-size: 30px;
+    font-size: 24px;
     font-weight: 800;
     line-height: 1;
 }
@@ -123,6 +131,11 @@
     display: flex;
     gap: 8px;
     align-items: center;
+}
+
+.ss-nav-links {
+    margin-left: auto;
+    flex-wrap: wrap;
 }
 
 .ss-nav-btn {
@@ -148,6 +161,22 @@
     border-color: var(--blue);
     background: var(--blue);
     color: #fff;
+}
+
+.ss-nav-btn-register {
+    border-color: var(--orange);
+    background: var(--orange);
+    color: #fff;
+}
+
+.ss-nav-user {
+    border: 1px solid #d0d7e2;
+    background: #f5f7fb;
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #303745;
 }
 
 .ss-nav-badge {
@@ -340,6 +369,10 @@
     font-weight: 700;
 }
 
+.ss-login-panel .ss-form-grid {
+    align-items: start;
+}
+
 .ss-placeholder {
     border: 1px solid #d3dae5;
     border-radius: 8px;
@@ -385,26 +418,37 @@
     border-radius: 8px;
     min-height: 150px;
     position: relative;
+    overflow: hidden;
 }
 
-.ss-hero-art::before,
-.ss-hero-art::after {
-    content: '';
+.ss-hero-art-logo {
     position: absolute;
-    border-radius: 8px;
+    width: 112px;
+    height: 112px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 999px;
+    object-fit: cover;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.ss-hero-art-badge {
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.8);
     background: #fff;
 }
 
-.ss-hero-art::before {
-    width: 80px;
-    height: 80px;
+.ss-hero-art-badge-a {
     left: 18px;
     top: 14px;
 }
 
-.ss-hero-art::after {
-    width: 96px;
-    height: 96px;
+.ss-hero-art-badge-b {
     right: 18px;
     bottom: 14px;
 }
@@ -659,17 +703,13 @@
     }
 
     .ss-brand-name {
-        font-size: 24px;
+        font-size: 22px;
     }
 }
 
 @media (max-width: 640px) {
     .ss-main {
         padding: 12px;
-    }
-
-    .ss-nav-social {
-        display: none;
     }
 
     .ss-product-grid {

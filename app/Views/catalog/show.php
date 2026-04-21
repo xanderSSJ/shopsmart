@@ -1,13 +1,15 @@
+<?php $defaultProductImage = asset_url('img/product-placeholder.svg'); ?>
+
 <section class="ss-product-layout">
     <div>
         <div class="ss-product-mainimg">
-            <img src="<?= e($product['imagen_url'] ?: 'https://placehold.co/900x900?text=ShopSmart') ?>" alt="<?= e($product['nombre']) ?>">
+            <img src="<?= e($product['imagen_url'] ?: $defaultProductImage) ?>" alt="<?= e($product['nombre']) ?>">
         </div>
 
         <div class="ss-thumbs">
-            <div class="ss-thumb"><img src="<?= e($product['imagen_url'] ?: 'https://placehold.co/120x120?text=1') ?>" alt="thumb"></div>
-            <div class="ss-thumb"><img src="<?= e($product['imagen_url'] ?: 'https://placehold.co/120x120?text=2') ?>" alt="thumb"></div>
-            <div class="ss-thumb"><img src="<?= e($product['imagen_url'] ?: 'https://placehold.co/120x120?text=3') ?>" alt="thumb"></div>
+            <div class="ss-thumb"><img src="<?= e($product['imagen_url'] ?: $defaultProductImage) ?>" alt="thumb"></div>
+            <div class="ss-thumb"><img src="<?= e($product['imagen_url'] ?: $defaultProductImage) ?>" alt="thumb"></div>
+            <div class="ss-thumb"><img src="<?= e($product['imagen_url'] ?: $defaultProductImage) ?>" alt="thumb"></div>
         </div>
     </div>
 

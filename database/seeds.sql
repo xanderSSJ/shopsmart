@@ -88,6 +88,78 @@ FROM categorias c
 WHERE c.nombre = 'Gaming'
 AND NOT EXISTS (SELECT 1 FROM productos p WHERE p.nombre = 'Silla Gamer Storm');
 
+INSERT INTO productos (id_categoria, nombre, descripcion, precio, stock, imagen_url, estado)
+SELECT c.id_categoria, 'Smartwatch Orbit', 'Reloj inteligente con monitoreo de salud y notificaciones.', 2799.00, 26, 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1200&q=80', 'activo'
+FROM categorias c
+WHERE c.nombre = 'Electronica'
+AND NOT EXISTS (SELECT 1 FROM productos p WHERE p.nombre = 'Smartwatch Orbit');
+
+INSERT INTO productos (id_categoria, nombre, descripcion, precio, stock, imagen_url, estado)
+SELECT c.id_categoria, 'Camara Vision 4K', 'Camara compacta para creadores de contenido y viajes.', 6899.00, 11, 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=80', 'activo'
+FROM categorias c
+WHERE c.nombre = 'Electronica'
+AND NOT EXISTS (SELECT 1 FROM productos p WHERE p.nombre = 'Camara Vision 4K');
+
+INSERT INTO productos (id_categoria, nombre, descripcion, precio, stock, imagen_url, estado)
+SELECT c.id_categoria, 'Router Mesh Air', 'Cobertura WiFi estable para casa y oficina.', 1899.00, 24, 'https://images.unsplash.com/photo-1642121598054-9f6f2f8f5a6f?auto=format&fit=crop&w=1200&q=80', 'activo'
+FROM categorias c
+WHERE c.nombre = 'Electronica'
+AND NOT EXISTS (SELECT 1 FROM productos p WHERE p.nombre = 'Router Mesh Air');
+
+INSERT INTO productos (id_categoria, nombre, descripcion, precio, stock, imagen_url, estado)
+SELECT c.id_categoria, 'Earbuds Neo Lite', 'Audifonos in-ear compactos con estuche de carga rapida.', 999.00, 35, 'https://images.unsplash.com/photo-1588423771073-b8903fbb85b5?auto=format&fit=crop&w=1200&q=80', 'activo'
+FROM categorias c
+WHERE c.nombre = 'Audio'
+AND NOT EXISTS (SELECT 1 FROM productos p WHERE p.nombre = 'Earbuds Neo Lite');
+
+INSERT INTO productos (id_categoria, nombre, descripcion, precio, stock, imagen_url, estado)
+SELECT c.id_categoria, 'Soundbar Cinema Beat', 'Barra de sonido para una experiencia envolvente en casa.', 3299.00, 13, 'https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=1200&q=80', 'activo'
+FROM categorias c
+WHERE c.nombre = 'Audio'
+AND NOT EXISTS (SELECT 1 FROM productos p WHERE p.nombre = 'Soundbar Cinema Beat');
+
+INSERT INTO productos (id_categoria, nombre, descripcion, precio, stock, imagen_url, estado)
+SELECT c.id_categoria, 'Consola Mixer Audio Home', 'Mezclador basico para podcasts, clases y streaming.', 2499.00, 14, 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1200&q=80', 'activo'
+FROM categorias c
+WHERE c.nombre = 'Audio'
+AND NOT EXISTS (SELECT 1 FROM productos p WHERE p.nombre = 'Consola Mixer Audio Home');
+
+INSERT INTO productos (id_categoria, nombre, descripcion, precio, stock, imagen_url, estado)
+SELECT c.id_categoria, 'Escritorio Elevable Flex', 'Escritorio ajustable para trabajar sentado o de pie.', 6399.00, 7, 'https://images.unsplash.com/photo-1593476550610-87baa860004a?auto=format&fit=crop&w=1200&q=80', 'activo'
+FROM categorias c
+WHERE c.nombre = 'Oficina'
+AND NOT EXISTS (SELECT 1 FROM productos p WHERE p.nombre = 'Escritorio Elevable Flex');
+
+INSERT INTO productos (id_categoria, nombre, descripcion, precio, stock, imagen_url, estado)
+SELECT c.id_categoria, 'Lampara LED Focus', 'Lampara de escritorio con intensidad regulable.', 699.00, 44, 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=1200&q=80', 'activo'
+FROM categorias c
+WHERE c.nombre = 'Oficina'
+AND NOT EXISTS (SELECT 1 FROM productos p WHERE p.nombre = 'Lampara LED Focus');
+
+INSERT INTO productos (id_categoria, nombre, descripcion, precio, stock, imagen_url, estado)
+SELECT c.id_categoria, 'Webcam Pro Meet', 'Webcam Full HD con microfono integrado para videollamadas.', 1199.00, 29, 'https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?auto=format&fit=crop&w=1200&q=80', 'activo'
+FROM categorias c
+WHERE c.nombre = 'Oficina'
+AND NOT EXISTS (SELECT 1 FROM productos p WHERE p.nombre = 'Webcam Pro Meet');
+
+INSERT INTO productos (id_categoria, nombre, descripcion, precio, stock, imagen_url, estado)
+SELECT c.id_categoria, 'Teclado Gamer Phantom', 'Teclado RGB de respuesta rapida para partidas competitivas.', 2299.00, 21, 'https://images.unsplash.com/photo-1595225476474-87563907a212?auto=format&fit=crop&w=1200&q=80', 'activo'
+FROM categorias c
+WHERE c.nombre = 'Gaming'
+AND NOT EXISTS (SELECT 1 FROM productos p WHERE p.nombre = 'Teclado Gamer Phantom');
+
+INSERT INTO productos (id_categoria, nombre, descripcion, precio, stock, imagen_url, estado)
+SELECT c.id_categoria, 'Control HyperPad X', 'Control inalambrico ergonomico para gaming casual.', 1599.00, 33, 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?auto=format&fit=crop&w=1200&q=80', 'activo'
+FROM categorias c
+WHERE c.nombre = 'Gaming'
+AND NOT EXISTS (SELECT 1 FROM productos p WHERE p.nombre = 'Control HyperPad X');
+
+INSERT INTO productos (id_categoria, nombre, descripcion, precio, stock, imagen_url, estado)
+SELECT c.id_categoria, 'Mousepad RGB Titan', 'Superficie amplia con borde RGB y base antideslizante.', 499.00, 55, 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=1200&q=80', 'activo'
+FROM categorias c
+WHERE c.nombre = 'Gaming'
+AND NOT EXISTS (SELECT 1 FROM productos p WHERE p.nombre = 'Mousepad RGB Titan');
+
 -- Credenciales demo:
 -- admin@shopsmart.local / Admin123!
 -- cliente@shopsmart.local / Cliente123!

@@ -1,3 +1,5 @@
+<?php $defaultProductImage = asset_url('img/product-placeholder.svg'); ?>
+
 <section class="ss-banner ss-banner-cart">
     <h2>Tu carrito en un solo lugar</h2>
     <p>Actualiza cantidades, elimina productos y confirma tu compra simulada.</p>
@@ -34,7 +36,7 @@
                     <tr>
                         <td>
                             <div class="d-flex align-items-center gap-2">
-                                <img src="<?= e($item['imagen_url'] ?: 'https://placehold.co/90x90?text=Producto') ?>" alt="<?= e($item['nombre']) ?>" class="cart-thumb">
+                                <img src="<?= e($item['imagen_url'] ?: $defaultProductImage) ?>" alt="<?= e($item['nombre']) ?>" class="cart-thumb">
                                 <span><?= e($item['nombre']) ?></span>
                             </div>
                         </td>

@@ -16,7 +16,7 @@ if (nav_active('/login', true)) {
 
 <nav class="ss-nav">
     <div class="ss-brand">
-        <div class="ss-brand-icon">S</div>
+        <img class="ss-brand-logo" src="<?= e(asset_url('img/shopsmart-logo.svg')) ?>" alt="ShopSmart">
         <div>
             <div class="ss-brand-name">ShopSmart</div>
             <div class="ss-brand-desc"><?= e($subTitle) ?></div>
@@ -25,19 +25,20 @@ if (nav_active('/login', true)) {
 
     <div class="ss-nav-links">
         <a class="ss-nav-btn <?= (nav_active('/catalogo') || nav_active('/producto') || nav_active('/', true)) ? 'is-active' : '' ?>" href="<?= e(base_url('/catalogo')) ?>">Tienda</a>
-        <a class="ss-nav-btn <?= nav_active('/login', true) ? 'is-active' : '' ?>" href="<?= e(base_url('/login')) ?>">Inicio sesion</a>
-        <a class="ss-nav-btn <?= nav_active('/carrito') ? 'is-active' : '' ?>" href="<?= e(base_url('/carrito')) ?>">Carrito</a>
-        <a class="ss-nav-btn <?= nav_active('/admin') ? 'is-active' : '' ?>" href="<?= e(base_url('/admin/productos')) ?>">Admin</a>
+        <?php if ($user !== null): ?>
+            <a class="ss-nav-btn <?= nav_active('/carrito') ? 'is-active' : '' ?>" href="<?= e(base_url('/carrito')) ?>">Carrito</a>
+        <?php endif; ?>
+        <?php if ($isAdmin): ?>
+            <a class="ss-nav-btn <?= nav_active('/admin') ? 'is-active' : '' ?>" href="<?= e(base_url('/admin/productos')) ?>">Admin</a>
+        <?php endif; ?>
     </div>
 
     <div class="ss-nav-right">
-        <span class="ss-nav-social">f</span>
-        <span class="ss-nav-social">&#9716;</span>
-        <span class="ss-nav-social">@</span>
-
-        <span class="ss-nav-badge"><?= e($user !== null ? ($isAdmin ? 'Admin' : 'Usuario') : 'Invitado') ?></span>
-
-        <?php if ($user !== null): ?>
+        <?php if ($user === null): ?>
+            <a class="ss-nav-btn <?= nav_active('/login', true) ? 'is-active' : '' ?>" href="<?= e(base_url('/login')) ?>">Iniciar sesion</a>
+            <a class="ss-nav-btn ss-nav-btn-register" href="<?= e(base_url('/login#registro')) ?>">Registrarse</a>
+        <?php else: ?>
+            <span class="ss-nav-user"><?= e((string) ($user['nombre'] ?? 'Usuario')) ?></span>
             <form action="<?= e(base_url('/logout')) ?>" method="post" class="m-0">
                 <?= csrf_field() ?>
                 <button class="ss-nav-btn" type="submit">Salir</button>
