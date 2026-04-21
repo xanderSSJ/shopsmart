@@ -13,4 +13,4 @@ RUN mkdir -p storage/logs \
 
 EXPOSE 8080
 
-CMD ["sh", "-c", "php -S 0.0.0.0:${PORT:-8080} server-router.php"]
+CMD ["sh", "-c", "php -S 0.0.0.0:${PORT:-8080} -t public server-router.php"]
