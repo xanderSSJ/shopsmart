@@ -1,0 +1,241 @@
+-- ShopSmart PostgreSQL install
+-- Uso recomendado en Railway o Postgres local:
+-- 1) Ejecuta este archivo completo sobre tu base ya creada.
+-- 2) Si tu proveedor no permite crear roles/bases, usa solo schema+seeds (ya incluidos aqui).
+-- Credenciales demo app (local):
+-- DB_DATABASE=shopsmart_db
+-- DB_USERNAME=shopsmart_user
+-- DB_PASSWORD=ShopSmart_2026!
+-- ShopSmart PostgreSQL schema
+-- Compatible with Railway Postgres
+
+CREATE TABLE IF NOT EXISTS roles (
+    id_rol INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nombre VARCHAR(30) NOT NULL UNIQUE,
+    descripcion VARCHAR(150)
+);
+
+CREATE TABLE IF NOT EXISTS usuarios (
+    id_usuario INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    email VARCHAR(120) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    id_rol INTEGER NOT NULL REFERENCES roles(id_rol),
+    saldo NUMERIC(10,2) NOT NULL DEFAULT 0.00,
+    activo BOOLEAN NOT NULL DEFAULT TRUE,
+    fecha_registro TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    fecha_actualizacion TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS categorias (
+    id_categoria INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nombre VARCHAR(80) NOT NULL UNIQUE,
+    descripcion VARCHAR(180)
+);
+
+CREATE TABLE IF NOT EXISTS productos (
+    id_producto INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_categoria INTEGER NOT NULL REFERENCES categorias(id_categoria),
+    nombre VARCHAR(120) NOT NULL,
+    descripcion TEXT,
+    precio NUMERIC(10,2) NOT NULL CHECK (precio >= 0),
+    stock INTEGER NOT NULL DEFAULT 0 CHECK (stock >= 0),
+    imagen_url VARCHAR(255),
+    estado VARCHAR(20) NOT NULL DEFAULT 'activo' CHECK (estado IN ('activo', 'inactivo')),
+    fecha_creacion TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    fecha_actualizacion TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS carritos (
+    id_carrito INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_usuario INTEGER NOT NULL REFERENCES usuarios(id_usuario),
+    estado VARCHAR(20) NOT NULL DEFAULT 'activo' CHECK (estado IN ('activo', 'cerrado')),
+    fecha_creacion TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    fecha_actualizacion TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS detalle_carrito (
+    id_detalle_carrito INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_carrito INTEGER NOT NULL REFERENCES carritos(id_carrito) ON DELETE CASCADE,
+    id_producto INTEGER NOT NULL REFERENCES productos(id_producto),
+    cantidad INTEGER NOT NULL DEFAULT 1 CHECK (cantidad > 0),
+    precio_unitario NUMERIC(10,2) NOT NULL CHECK (precio_unitario >= 0),
+    subtotal NUMERIC(10,2) NOT NULL CHECK (subtotal >= 0),
+    UNIQUE (id_carrito, id_producto)
+);
+
+CREATE TABLE IF NOT EXISTS pedidos (
+    id_pedido INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_usuario INTEGER NOT NULL REFERENCES usuarios(id_usuario),
+    total NUMERIC(10,2) NOT NULL CHECK (total >= 0),
+    estado VARCHAR(20) NOT NULL DEFAULT 'pendiente' CHECK (estado IN ('pendiente', 'confirmado', 'cancelado')),
+    fecha_pedido TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS detalle_pedidos (
+    id_detalle_pedido INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_pedido INTEGER NOT NULL REFERENCES pedidos(id_pedido) ON DELETE CASCADE,
+    id_producto INTEGER NOT NULL REFERENCES productos(id_producto),
+    cantidad INTEGER NOT NULL CHECK (cantidad > 0),
+    precio_unitario NUMERIC(10,2) NOT NULL CHECK (precio_unitario >= 0),
+    subtotal NUMERIC(10,2) NOT NULL CHECK (subtotal >= 0)
+);
+
+CREATE INDEX IF NOT EXISTS idx_productos_estado ON productos(estado);
+CREATE INDEX IF NOT EXISTS idx_carritos_usuario_estado ON carritos(id_usuario, estado);
+CREATE INDEX IF NOT EXISTS idx_detalle_carrito_cart ON detalle_carrito(id_carrito);
+CREATE INDEX IF NOT EXISTS idx_pedidos_usuario ON pedidos(id_usuario);
+CREATE INDEX IF NOT EXISTS idx_detalle_pedidos_pedido ON detalle_pedidos(id_pedido);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_carritos_usuario_activo ON carritos(id_usuario) WHERE estado = 'activo';
+
+CREATE OR REPLACE FUNCTION set_fecha_actualizacion()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.fecha_actualizacion = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS tr_usuarios_fecha_actualizacion ON usuarios;
+CREATE TRIGGER tr_usuarios_fecha_actualizacion
+BEFORE UPDATE ON usuarios
+FOR EACH ROW
+EXECUTE FUNCTION set_fecha_actualizacion();
+
+DROP TRIGGER IF EXISTS tr_productos_fecha_actualizacion ON productos;
+CREATE TRIGGER tr_productos_fecha_actualizacion
+BEFORE UPDATE ON productos
+FOR EACH ROW
+EXECUTE FUNCTION set_fecha_actualizacion();
+
+DROP TRIGGER IF EXISTS tr_carritos_fecha_actualizacion ON carritos;
+CREATE TRIGGER tr_carritos_fecha_actualizacion
+BEFORE UPDATE ON carritos
+FOR EACH ROW
+EXECUTE FUNCTION set_fecha_actualizacion();
+
+-- ShopSmart PostgreSQL seeds
+
+INSERT INTO roles (nombre, descripcion)
+VALUES
+('admin', 'Acceso total al panel administrativo'),
+('cliente', 'Usuario comprador de la tienda')
+ON CONFLICT (nombre)
+DO UPDATE SET descripcion = EXCLUDED.descripcion;
+
+INSERT INTO categorias (nombre, descripcion)
+VALUES
+('Electronica', 'Equipos y accesorios de tecnologia'),
+('Audio', 'Audifonos, bocinas y perifericos de sonido'),
+('Oficina', 'Articulos utiles para estudio y trabajo'),
+('Gaming', 'Perifericos y accesorios para jugadores')
+ON CONFLICT (nombre)
+DO UPDATE SET descripcion = EXCLUDED.descripcion;
+
+INSERT INTO productos (id_categoria, nombre, descripcion, precio, stock, imagen_url, estado)
+SELECT c.id_categoria, 'Laptop Pro 14', 'Laptop ultraligera para productividad y estudio.', 18999.00, 8, 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=1200&q=80', 'activo'
+FROM categorias c
+WHERE c.nombre = 'Electronica'
+AND NOT EXISTS (SELECT 1 FROM productos p WHERE p.nombre = 'Laptop Pro 14');
+
+INSERT INTO productos (id_categoria, nombre, descripcion, precio, stock, imagen_url, estado)
+SELECT c.id_categoria, 'Smartphone Nova X', 'Pantalla AMOLED, bateria de larga duracion y camara dual.', 12999.00, 20, 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=1200&q=80', 'activo'
+FROM categorias c
+WHERE c.nombre = 'Electronica'
+AND NOT EXISTS (SELECT 1 FROM productos p WHERE p.nombre = 'Smartphone Nova X');
+
+INSERT INTO productos (id_categoria, nombre, descripcion, precio, stock, imagen_url, estado)
+SELECT c.id_categoria, 'Tablet Smart Note', 'Tablet ideal para lectura, clases y videollamadas.', 7499.00, 12, 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=1200&q=80', 'activo'
+FROM categorias c
+WHERE c.nombre = 'Electronica'
+AND NOT EXISTS (SELECT 1 FROM productos p WHERE p.nombre = 'Tablet Smart Note');
+
+INSERT INTO productos (id_categoria, nombre, descripcion, precio, stock, imagen_url, estado)
+SELECT c.id_categoria, 'Audifonos Wave ANC', 'Cancelacion de ruido y autonomia de 30 horas.', 2399.00, 30, 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1200&q=80', 'activo'
+FROM categorias c
+WHERE c.nombre = 'Audio'
+AND NOT EXISTS (SELECT 1 FROM productos p WHERE p.nombre = 'Audifonos Wave ANC');
+
+INSERT INTO productos (id_categoria, nombre, descripcion, precio, stock, imagen_url, estado)
+SELECT c.id_categoria, 'Bocina Pulse Mini', 'Bocina bluetooth portatil con sonido 360.', 1599.00, 25, 'https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=1200&q=80', 'activo'
+FROM categorias c
+WHERE c.nombre = 'Audio'
+AND NOT EXISTS (SELECT 1 FROM productos p WHERE p.nombre = 'Bocina Pulse Mini');
+
+INSERT INTO productos (id_categoria, nombre, descripcion, precio, stock, imagen_url, estado)
+SELECT c.id_categoria, 'Microfono StreamCast', 'Microfono USB para videoclases y streaming.', 1799.00, 16, 'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=1200&q=80', 'activo'
+FROM categorias c
+WHERE c.nombre = 'Audio'
+AND NOT EXISTS (SELECT 1 FROM productos p WHERE p.nombre = 'Microfono StreamCast');
+
+INSERT INTO productos (id_categoria, nombre, descripcion, precio, stock, imagen_url, estado)
+SELECT c.id_categoria, 'Silla Ergonomica Office+', 'Soporte lumbar y ajuste de altura para jornadas largas.', 3499.00, 10, 'https://images.unsplash.com/photo-1580480055273-228ff5388ef8?auto=format&fit=crop&w=1200&q=80', 'activo'
+FROM categorias c
+WHERE c.nombre = 'Oficina'
+AND NOT EXISTS (SELECT 1 FROM productos p WHERE p.nombre = 'Silla Ergonomica Office+');
+
+INSERT INTO productos (id_categoria, nombre, descripcion, precio, stock, imagen_url, estado)
+SELECT c.id_categoria, 'Teclado Mecanico Typing Pro', 'Teclado mecanico ideal para oficina y programacion.', 1899.00, 22, 'https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?auto=format&fit=crop&w=1200&q=80', 'activo'
+FROM categorias c
+WHERE c.nombre = 'Oficina'
+AND NOT EXISTS (SELECT 1 FROM productos p WHERE p.nombre = 'Teclado Mecanico Typing Pro');
+
+INSERT INTO productos (id_categoria, nombre, descripcion, precio, stock, imagen_url, estado)
+SELECT c.id_categoria, 'Monitor UltraView 27"', 'Monitor 2K para productividad con gran nitidez.', 4999.00, 14, 'https://images.unsplash.com/photo-1527443224154-c4f0617d1f42?auto=format&fit=crop&w=1200&q=80', 'activo'
+FROM categorias c
+WHERE c.nombre = 'Oficina'
+AND NOT EXISTS (SELECT 1 FROM productos p WHERE p.nombre = 'Monitor UltraView 27"');
+
+INSERT INTO productos (id_categoria, nombre, descripcion, precio, stock, imagen_url, estado)
+SELECT c.id_categoria, 'Mouse Gamer Viper', 'Mouse RGB de alta precision con 8 botones.', 999.00, 40, 'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&w=1200&q=80', 'activo'
+FROM categorias c
+WHERE c.nombre = 'Gaming'
+AND NOT EXISTS (SELECT 1 FROM productos p WHERE p.nombre = 'Mouse Gamer Viper');
+
+INSERT INTO productos (id_categoria, nombre, descripcion, precio, stock, imagen_url, estado)
+SELECT c.id_categoria, 'Headset Titan 7.1', 'Audio envolvente para sesiones gaming largas.', 1999.00, 18, 'https://images.unsplash.com/photo-1599669454699-248893623440?auto=format&fit=crop&w=1200&q=80', 'activo'
+FROM categorias c
+WHERE c.nombre = 'Gaming'
+AND NOT EXISTS (SELECT 1 FROM productos p WHERE p.nombre = 'Headset Titan 7.1');
+
+INSERT INTO productos (id_categoria, nombre, descripcion, precio, stock, imagen_url, estado)
+SELECT c.id_categoria, 'Silla Gamer Storm', 'Diseno reclinable con cojines ergonomicos.', 5299.00, 9, 'https://images.unsplash.com/photo-1592078615290-033ee584e267?auto=format&fit=crop&w=1200&q=80', 'activo'
+FROM categorias c
+WHERE c.nombre = 'Gaming'
+AND NOT EXISTS (SELECT 1 FROM productos p WHERE p.nombre = 'Silla Gamer Storm');
+
+-- Credenciales demo:
+-- admin@shopsmart.local / Admin123!
+-- cliente@shopsmart.local / Cliente123!
+INSERT INTO usuarios (nombre, email, password_hash, id_rol, saldo, activo)
+SELECT 'Administrador ShopSmart', 'admin@shopsmart.local', '$2b$12$87jmC6tx7FKgvS34aixu9uUWEbKHYcCqSm3CUAY8a1V6NT8j7YeRu', r.id_rol, 0.00, TRUE
+FROM roles r
+WHERE r.nombre = 'admin'
+AND NOT EXISTS (SELECT 1 FROM usuarios u WHERE u.email = 'admin@shopsmart.local');
+
+INSERT INTO usuarios (nombre, email, password_hash, id_rol, saldo, activo)
+SELECT 'Cliente Demo ShopSmart', 'cliente@shopsmart.local', '$2b$12$iKxrYEg22iKrF.LAOJABsO4B2YgfFE4hpPTVkkA.8iCspTej0rOVW', r.id_rol, 0.00, TRUE
+FROM roles r
+WHERE r.nombre = 'cliente'
+AND NOT EXISTS (SELECT 1 FROM usuarios u WHERE u.email = 'cliente@shopsmart.local');
+
+INSERT INTO carritos (id_usuario, estado)
+SELECT u.id_usuario, 'activo'
+FROM usuarios u
+WHERE u.email = 'admin@shopsmart.local'
+AND NOT EXISTS (
+    SELECT 1
+    FROM carritos c
+    WHERE c.id_usuario = u.id_usuario AND c.estado = 'activo'
+);
+
+INSERT INTO carritos (id_usuario, estado)
+SELECT u.id_usuario, 'activo'
+FROM usuarios u
+WHERE u.email = 'cliente@shopsmart.local'
+AND NOT EXISTS (
+    SELECT 1
+    FROM carritos c
+    WHERE c.id_usuario = u.id_usuario AND c.estado = 'activo'
+);
+
